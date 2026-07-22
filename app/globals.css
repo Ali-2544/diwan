@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Users who ask for reduced motion should not get smooth-scroll jumps. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    /* Neutralise the decorative infinite animations. */
+    .animate-floaty,
+    .animate-marquee,
+    .animate-blob,
+    .animate-blob-slow {
+      animation: none !important;
+    }
+  }
+
+  body {
+    @apply bg-white font-body text-ink antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: #f5ead2;
+    color: #0e2a47;
+  }
+
+  /* Newsreader numerals in mockups/stats read better with tabular figures. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-gold ring-offset-2;
+  }
+}
+
+@layer utilities {
+  /* Gold gradient text (hero highlight + key numbers). */
+  .text-gold-gradient {
+    background: linear-gradient(100deg, #9a6410, #d8a24c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Edge-fade mask for the portal marquee. */
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 12%,
+      #000 88%,
+      transparent
+    );
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+
+  .skip-link {
+    @apply absolute left-4 top-4 z-[100] -translate-y-24 rounded-btn-sm bg-gold px-4 py-2 text-sm font-bold text-[#3a2a06] transition-transform duration-200 focus:translate-y-0;
+  }
+}

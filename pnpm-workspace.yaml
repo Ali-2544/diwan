@@ -1,0 +1,5 @@
+# pnpm 11 reads build-script approvals from here, not from package.json.
+# sharp is required by next/image; unrs-resolver by eslint-config-next.
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
