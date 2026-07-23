@@ -33,12 +33,17 @@ const PROBLEMS = [
   },
 ];
 
-/** Section 6 — where money leaks (tint band, 2×2 cards). */
+/**
+ * Section — where money leaks, as an editorial ledger: a sticky heading beside
+ * indexed problem → solution rows, each contrasting the leak (muted) with what
+ * the system does about it (a highlighted gold-ruled panel).
+ */
 export function Problems() {
   return (
     <section className="border-t border-line bg-tint px-5 py-section sm:px-gutter">
-      <Container>
-        <div className="mb-14 max-w-prose-sm">
+      <Container className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+        {/* Sticky heading */}
+        <div className="lg:sticky lg:top-24 lg:self-start">
           <Reveal variant="up">
             <Eyebrow>Where money leaks</Eyebrow>
           </Reveal>
@@ -48,22 +53,46 @@ export function Problems() {
               enquiries.
             </h2>
           </Reveal>
+          <Reveal variant="up" delay={120}>
+            <p className="mt-5 max-w-sm text-[17px] leading-[1.6] text-slate">
+              Four places a Dubai brokerage quietly loses money — and what
+              closes each one.
+            </p>
+          </Reveal>
         </div>
 
-        <div className="grid gap-[22px] md:grid-cols-2">
+        {/* Ledger rows */}
+        <div className="flex flex-col">
           {PROBLEMS.map((p, i) => (
-            <Reveal key={p.title} variant="up" delay={i % 2 === 1 ? 80 : 0}>
-              <div className="group h-full rounded-card border border-line bg-white px-[30px] pb-7 pt-[30px] shadow-card transition-all duration-300 ease-diwan hover:-translate-y-1 hover:shadow-card-hover">
-                <h3 className="font-display text-[23px] font-semibold text-ink">
+            <Reveal
+              key={p.title}
+              variant="up"
+              delay={i * 90}
+              className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-4 border-t border-line py-8 first:border-t-0 first:pt-0 sm:gap-x-7"
+            >
+              <span className="font-display text-[clamp(28px,4vw,40px)] font-semibold leading-none text-gold/45">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+
+              <div>
+                <h3 className="font-display text-[clamp(20px,2.4vw,25px)] font-semibold text-ink">
                   {p.title}
                 </h3>
-                <p className="mt-[10px] text-[15px] leading-[1.6] text-slate">
+                <p className="mt-2 max-w-xl text-[15px] leading-[1.6] text-slate">
                   {p.problem}
                 </p>
-                <p className="mt-4 border-t border-line pt-4 text-[14.5px] font-semibold text-navy">
-                  <span className="text-gold">→ </span>
-                  {p.solution}
-                </p>
+
+                <div className="mt-4 flex gap-3 rounded-[14px] border border-line bg-white px-4 py-3.5 shadow-card">
+                  <span
+                    aria-hidden
+                    className="mt-0.5 font-display text-[17px] font-semibold text-gold"
+                  >
+                    →
+                  </span>
+                  <p className="text-[14.5px] font-semibold leading-[1.55] text-navy">
+                    {p.solution}
+                  </p>
+                </div>
               </div>
             </Reveal>
           ))}

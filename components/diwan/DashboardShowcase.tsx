@@ -1,25 +1,39 @@
+"use client";
+
+import { AnimatePresence, m, useReducedMotion } from "framer-motion";
+import { useState } from "react";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Reveal } from "@/components/motion/Reveal";
-import { Parallax } from "@/components/motion/Parallax";
 import { BrowserFrame } from "./BrowserFrame";
 import { ImageSlot } from "./ImageSlot";
-import { SITE } from "@/config/site";
+import { cn } from "@/lib/cn";
+import type { SlotKey } from "@/content/images";
 
-const TILES = [
-  { slot: "dash1", delay: 0 },
-  { slot: "dash2", delay: 120 },
-  { slot: "dash3", delay: 240 },
-] as const;
+const TABS: { key: string; label: string; slot: SlotKey; path: string }[] = [
+  { key: "leads", label: "Leads", slot: "dash1", path: "leads" },
+  { key: "listings", label: "Listings", slot: "dash2", path: "properties" },
+  { key: "deals", label: "Deals", slot: "dash3", path: "deals" },
+  { key: "calendar", label: "Calendar", slot: "crmCalendar", path: "calendar" },
+  { key: "tasks", label: "Tasks", slot: "crmTasks", path: "tasks" },
+];
 
-/** Section 5 — big dashboard screenshot (blur-focus reveal + parallax) + tiles. */
+/**
+ * Section — an interactive tabbed viewer. Pick a module and the framed
+ * screenshot crossfades to it. Complements the fanned deck (overview) with a
+ * pick-and-look-closer interaction.
+ */
 export function DashboardShowcase() {
+  const [active, setActive] = useState(TABS[0].key);
+  const reduce = useReducedMotion();
+  const tab = TABS.find((t) => t.key === active) ?? TABS[0];
+
   return (
-    <section className="relative overflow-hidden px-5 pb-[108px] pt-8 sm:px-gutter">
+    <section className="relative overflow-hidden px-5 py-section sm:px-gutter">
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[60px] h-[520px] w-[900px] -translate-x-1/2 rounded-full blur-[10px]"
+        className="pointer-events-none absolute left-1/2 top-[60px] h-[480px] w-[880px] max-w-[92vw] -translate-x-1/2 rounded-full blur-[10px]"
         style={{
-          background: "radial-gradient(circle,rgba(221,176,90,.14),transparent 70%)",
+          background: "radial-gradient(circle,rgba(221,176,90,.12),transparent 70%)",
         }}
       />
 
@@ -29,49 +43,69 @@ export function DashboardShowcase() {
         </Reveal>
         <Reveal variant="up" delay={60}>
           <h2 className="mx-auto mt-5 max-w-[720px] font-display text-[clamp(32px,5vw,48px)] font-semibold leading-[1.05] tracking-[-0.01em] text-ink">
-            Your entire business in one dashboard
+            Pick a module. See the real screen.
           </h2>
         </Reveal>
         <Reveal variant="up" delay={120}>
           <p className="mx-auto mt-[18px] max-w-[560px] text-[18px] leading-[1.6] text-slate">
-            From first enquiry to final commission — leads, listings, permits
-            and money on one screen your whole office reads the same way.
+            The same records, read the same way across every part of the
+            business — from first enquiry to final commission.
           </p>
         </Reveal>
-      </div>
 
-      <Parallax speed={0.05} className="relative mx-auto mt-[52px] max-w-showcase">
-        <Reveal variant="img">
-          <BrowserFrame
-            url={`${SITE.appDomain}/dashboard`}
-            className="rounded-card-lg shadow-showcase"
+        {/* Tabs */}
+        <Reveal variant="up" delay={160} className="mt-9 flex justify-center">
+          <div
+            role="tablist"
+            aria-label="Product modules"
+            className="flex flex-wrap justify-center gap-1.5 rounded-pill border border-line bg-tint p-1.5"
           >
-            <div className="relative h-[clamp(280px,42vw,600px)]">
-              <ImageSlot
-                slot="dashHero"
-                className="object-top"
-                sizes="(max-width: 1200px) 100vw, 1120px"
-              />
-            </div>
-          </BrowserFrame>
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                role="tab"
+                aria-selected={active === t.key}
+                onClick={() => setActive(t.key)}
+                className={cn(
+                  "rounded-pill px-4 py-2 text-[14px] font-semibold transition-all duration-200",
+                  active === t.key
+                    ? "bg-navy text-white shadow-[0_8px_18px_-10px_rgba(14,42,71,.7)]"
+                    : "text-slate hover:text-ink",
+                )}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </Reveal>
-      </Parallax>
-
-      <div className="mx-auto mt-[26px] grid max-w-showcase gap-[22px] md:grid-cols-3">
-        {TILES.map((tile) => (
-          <Reveal key={tile.slot} variant="img" delay={tile.delay}>
-            <div className="overflow-hidden rounded-card border border-line bg-white shadow-tile">
-              <div className="relative h-[240px]">
-                <ImageSlot
-                  slot={tile.slot}
-                  className="object-top"
-                  sizes="(max-width: 768px) 100vw, 360px"
-                />
-              </div>
-            </div>
-          </Reveal>
-        ))}
       </div>
+
+      {/* Screen */}
+      <Reveal variant="img" className="relative mx-auto mt-12 max-w-showcase">
+        <BrowserFrame
+          url={`app.diwan.ae/${tab.path}`}
+          className="rounded-card-lg shadow-showcase"
+        >
+          <div className="relative h-[clamp(260px,42vw,600px)]">
+            <AnimatePresence mode="wait" initial={false}>
+              <m.div
+                key={tab.key}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 1.02 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.99 }}
+                transition={{ duration: reduce ? 0.15 : 0.4, ease: [0.16, 0.8, 0.24, 1] }}
+                className="absolute inset-0"
+              >
+                <ImageSlot
+                  slot={tab.slot}
+                  className="object-top"
+                  sizes="(max-width: 1200px) 100vw, 1120px"
+                />
+              </m.div>
+            </AnimatePresence>
+          </div>
+        </BrowserFrame>
+      </Reveal>
     </section>
   );
 }
