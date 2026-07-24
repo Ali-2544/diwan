@@ -21,7 +21,13 @@ export type SlotKey =
   | "dash3"
   | "crmCalendar"
   | "crmTasks"
-  | "crmPropertyDetail";
+  | "crmPropertyDetail"
+  | "crmContacts"
+  | "crmReports"
+  | "crmCommissions"
+  | "crmCampaigns"
+  | "crmUsers"
+  | "crmActivity";
 
 export const IMAGES: Record<SlotKey, { src: string; alt: string; crm?: boolean }> = {
   heroListing: {
@@ -77,6 +83,36 @@ export const IMAGES: Record<SlotKey, { src: string; alt: string; crm?: boolean }
   crmPropertyDetail: {
     src: "/diwan/crm-property-detail.png",
     alt: "A Diwan listing showing its Trakheesi permit block and portal syndication",
+    crm: true,
+  },
+  crmContacts: {
+    src: "/diwan/crm-contacts.png",
+    alt: "Diwan contacts directory",
+    crm: true,
+  },
+  crmReports: {
+    src: "/diwan/crm-reports.png",
+    alt: "Diwan reports and lead-source ROI",
+    crm: true,
+  },
+  crmCommissions: {
+    src: "/diwan/crm-commissions.png",
+    alt: "Diwan commissions with splits, co-broke and VAT",
+    crm: true,
+  },
+  crmCampaigns: {
+    src: "/diwan/crm-campaigns.png",
+    alt: "Diwan campaign performance and agent rotation",
+    crm: true,
+  },
+  crmUsers: {
+    src: "/diwan/crm-users.png",
+    alt: "Diwan users, roles and permissions",
+    crm: true,
+  },
+  crmActivity: {
+    src: "/diwan/crm-activity.png",
+    alt: "Diwan append-only activity and audit log",
     crm: true,
   },
 };

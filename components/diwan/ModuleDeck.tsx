@@ -14,27 +14,32 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ImageSlot } from "./ImageSlot";
 import type { SlotKey } from "@/content/images";
 
-// Dashboard sits in the middle so it's the prominent top-of-arc card.
+// Dashboard sits in the middle so it's the prominent apex card. The strongest
+// screens flank it; the rest fan out to the wings.
 const CARDS: { slot: SlotKey; label: string }[] = [
-  { slot: "dash1", label: "Leads" },
-  { slot: "dash2", label: "Listings" },
+  { slot: "crmActivity", label: "Activity" },
+  { slot: "crmContacts", label: "Contacts" },
+  { slot: "crmReports", label: "Reports" },
   { slot: "crmCalendar", label: "Calendar" },
+  { slot: "dash2", label: "Listings" },
   { slot: "dashHero", label: "Dashboard" },
-  { slot: "crmPropertyDetail", label: "Listing & permit" },
   { slot: "dash3", label: "Deals" },
+  { slot: "crmCommissions", label: "Commissions" },
+  { slot: "dash1", label: "Leads" },
+  { slot: "crmCampaigns", label: "Campaigns" },
   { slot: "crmTasks", label: "Tasks" },
 ];
 
-/** Radius of the arc the cards ride. Large + a low pivot = a shallow rainbow. */
-const RADIUS = "clamp(540px, 70vw, 960px)";
 /**
- * Pivot well below the section (> radius) so the arc's apex sits *below* the
- * heading rather than colliding with it, and the cards arc overhead.
+ * A very large radius with a pivot far below flattens the arc into the wide,
+ * shallow rainbow the reference shows — the cards' tops trace a gentle line
+ * rather than a tight circle.
  */
+const RADIUS = "clamp(860px, 100vw, 1440px)";
 const PIVOT_X = 50;
-const PIVOT_Y = 212;
+const PIVOT_Y = 250;
 /** Cards keep only a little of their arc angle as tilt, so they stay upright. */
-const TILT_RATIO = 0.26;
+const TILT_RATIO = 0.2;
 
 /**
  * Scroll-driven module deck — a rainbow arc.
@@ -63,10 +68,10 @@ export function ModuleDeck() {
     restDelta: 0.001,
   });
 
-  // The fan swings right → left as you scroll (the half-circle sweep).
-  const swing = useTransform(p, [0, 1], reduce ? [0, 0] : [46, -46]);
-  // Cards spread a little more as the arc opens.
-  const step = useTransform(p, [0, 1], reduce ? [8, 8] : [6.5, 9]);
+  // The fan swings right → left as you scroll (the shallow sweep).
+  const swing = useTransform(p, [0, 1], reduce ? [0, 0] : [30, -30]);
+  // Cards spread a little more as the arc opens. Smaller step for more cards.
+  const step = useTransform(p, [0, 1], reduce ? [5.5, 5.5] : [4, 6]);
 
   return (
     <section
@@ -136,7 +141,9 @@ function FanCard({
 
   return (
     <m.div
-      className="absolute"
+      // `hover:!z-[60]` (important) beats the inline z-index so the hovered
+      // card jumps in front of the whole fan.
+      className="group absolute cursor-pointer hover:!z-[60]"
       style={{
         left: `${PIVOT_X}%`,
         top: `${PIVOT_Y}%`,
@@ -145,18 +152,21 @@ function FanCard({
         zIndex: 20 - Math.round(Math.abs(offset) * 2),
       }}
     >
-      <figure className="w-[clamp(200px,22vw,300px)] overflow-hidden rounded-[20px] border border-line bg-white shadow-float">
-        <div className="relative aspect-[4/3]">
-          <ImageSlot
-            slot={slot}
-            className="object-[64%_14%]"
-            sizes="(max-width: 768px) 58vw, 300px"
-          />
-        </div>
-        <figcaption className="border-t border-line px-4 py-2.5 text-[12.5px] font-semibold text-navy">
-          {label}
-        </figcaption>
-      </figure>
+      {/* Inner wrapper carries the hover lift, independent of the arc transform. */}
+      <div className="transition-transform duration-300 ease-diwan will-change-transform group-hover:-translate-y-5 group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:group-hover:transform-none">
+        <figure className="w-[clamp(180px,19vw,272px)] overflow-hidden rounded-[20px] border border-line bg-white shadow-float transition-[box-shadow,border-color] duration-300 group-hover:border-gold/50 group-hover:shadow-[0_50px_90px_-40px_rgba(14,42,71,0.55)]">
+          <div className="relative aspect-[4/3]">
+            <ImageSlot
+              slot={slot}
+              className="object-[64%_14%]"
+              sizes="(max-width: 768px) 58vw, 300px"
+            />
+          </div>
+          <figcaption className="border-t border-line px-4 py-2.5 text-[12.5px] font-semibold text-navy transition-colors duration-300 group-hover:text-gold-text">
+            {label}
+          </figcaption>
+        </figure>
+      </div>
     </m.div>
   );
 }
